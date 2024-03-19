@@ -17,7 +17,7 @@ module.exports = {
       const registerUser = await createNew(newUser);
       res.status(200).json(registerUser);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(401).json({ error: error.message });
     }
   },
   loginUser: async (req, res) => {
@@ -25,12 +25,12 @@ module.exports = {
       const { userId, password } = req.body;
       const user = await findUserById(userId);
       if (!user) {
-        res.json({ error: "User not found" });
+        res.status(401).json({ error: "Mã Số Sinh viên không tồn tại" });
         return;
       }
       const isPasswordMatch = await bcryptjs.compare(password, user.password);
       if (!isPasswordMatch) {
-        res.json("password does not match");
+        res.status(401).json({ error: "Sai Mật Khẩu" });
       } else {
         const userJTW = {
           userId: user.userId,
