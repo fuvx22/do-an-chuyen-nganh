@@ -1,6 +1,11 @@
 const { StatusCodes } = require("http-status-codes");
 var jwt = require("jsonwebtoken");
-const { createNewUser, loginUser } = require("../../controller/userController");
+const {
+  createNewUser,
+  loginUser,
+  getUserById,
+} = require("../../controller/userController");
+const { verifyToken } = require("../../middlewares/verifyAccesToken");
 var express = require("express");
 
 const userRouter = express.Router();
@@ -8,6 +13,7 @@ const userRouter = express.Router();
 userRouter.route("/").post(createNewUser);
 
 userRouter.route("/login").post(loginUser);
+userRouter.route("/userBoard").get(verifyToken, getUserById);
 // userRouter.route("/login").post(async (req, res) => {
 //   const users = [
 //     {

@@ -5,6 +5,7 @@ const USER_COLLECTION_NAME = "user";
 const USER_SCHEMA = Joi.object({
   userId: Joi.string().required().min(5).max(10).trim().strict(),
   name: Joi.string().required().min(5).max(30).trim().strict(),
+  image: Joi.string().required().min(5).max(50).trim().strict(),
   password: Joi.string().required().min(10).trim().strict(),
   phoneNumber: Joi.string().required().min(10).max(10).trim().strict(),
   ethnic: Joi.string().default("Kinh").trim().strict(),
