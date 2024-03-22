@@ -37,6 +37,7 @@ module.exports = {
           name: user.name,
           email: user.phone,
         };
+
         const accessToken = await jwt.sign(userJTW, hashSecretKey, {
           expiresIn: "1d",
         });
@@ -44,5 +45,16 @@ module.exports = {
         res.status(200).send({ accessToken: accessToken });
       }
     } catch {}
+  },
+  getUserById: async (req, res, next) => {
+    try {
+      const { userId } = req.payload;
+      const user = await findUserById(userId);
+      if (user) {
+        res.status(200).json(user);
+      }
+    } catch (error) {
+      res.status(401).json({ error: error.message });
+    }
   },
 };
