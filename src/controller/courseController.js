@@ -5,10 +5,10 @@ const { StatusCodes } = require("http-status-codes");
 const createNew = async (req, res) => {
   try {
     const newCourse = req.body;
-    await courseModel.createNew(newCourse);
-    res.status(StatusCodes.CREATED).json(newCourse);
+    const createdCourse = await courseModel.createNew(newCourse);
+    res.status(StatusCodes.CREATED).json(createdCourse);
   } catch (error) {
-    res.status(StatusCodes.NOT_ACCEPTABLE).json({error: error.message});
+    res.status(StatusCodes.BAD_REQUEST).json({error: error.message});
   }
 }
 
@@ -19,7 +19,7 @@ const getCourses = async (req, res) => {
     res.status(StatusCodes.OK).json(courses)
 
   } catch (error) {
-    res.status(StatusCodes.NOT_ACCEPTABLE).json({error: error.message});
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: error.message});
   }
 }
 
