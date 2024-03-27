@@ -4,7 +4,7 @@ const { GET_DB } = require("../config/mongodb");
 const { OBJECT_ID_RULES, OBJECT_ID_MESSAGE } = require("../utils/validators");
 const COURSE_COLLECTION_NAME = "course";
 
-const USER_SCHEMA = Joi.object({
+const COURSE_SCHEMA = Joi.object({
   courseId: Joi.string().required().min(6).max(6).pattern(/^[0-9]{6}$/).trim().strict(),
   name: Joi.string().required().min(3).max(50).trim().strict(),
   courseCredits: Joi.number().integer().min(1).max(10),
@@ -26,7 +26,7 @@ const findOneById = async (id) => {
 
 const createNew = async (data) => {
   try {
-    const validData = await USER_SCHEMA.validateAsync(data, {
+    const validData = await COURSE_SCHEMA.validateAsync(data, {
       abortEarly: false,
     });
     const createdCourse = await GET_DB()
@@ -49,9 +49,42 @@ const getCourses = async () => {
   }
 }
 
+const editCourse = async (data) => {
+  try {
+    
+    const { _id, ...rest } = data;
+    const validData = await COURSE_SCHEMA.validateAsync(rest, { abortEarly: false });
+    const result = await GET_DB().collection(COURSE_COLLECTION_NAME).findOneAndUpdate(
+      { _id: new ObjectId(_id) },
+      { $set: validData },
+      { returnDocument: "after" }
+    )
+    console.log(result)
+    return result
+
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+const deleteCourse = async (courseToDetele) => {
+  try {
+    
+    const result = await GET_DB().collection(COURSE_COLLECTION_NAME).deleteOne(
+      { _id: new ObjectId(courseToDetele._id) }
+    )
+    return result
+
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 const courseModel = {
   createNew,
-  getCourses
+  getCourses,
+  editCourse,
+  deleteCourse
 }
 
 module.exports = courseModel
