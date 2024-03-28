@@ -6,6 +6,7 @@ const USER_SCHEMA = Joi.object({
   userId: Joi.string().required().min(5).max(10).trim().strict(),
   name: Joi.string().required().min(5).max(30).trim().strict(),
   image: Joi.string().required().min(5).max(50).trim().strict(),
+  role: Joi.string().required().min(5).max(50).trim().strict(),
   password: Joi.string().required().min(10).trim().strict(),
   phoneNumber: Joi.string().required().min(10).max(10).trim().strict(),
   ethnic: Joi.string().default("Kinh").trim().strict(),
@@ -13,9 +14,8 @@ const USER_SCHEMA = Joi.object({
   address: Joi.string().required().trim().min(5).strict(),
   class: Joi.string().required().trim().min(5).strict(),
   majorId: Joi.string().pattern(OBJECT_ID_RULES).message(OBJECT_ID_MESSAGE),
-  specializedMajor: Joi.string().required().min(5).trim().strict(),
+  specializedMajor: Joi.string().min(5).trim().strict(),
   academicYear: Joi.string()
-    .required()
     .min(9)
     .trim()
     .strict()

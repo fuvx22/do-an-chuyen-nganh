@@ -24,6 +24,7 @@ module.exports = {
     try {
       const { userId, password } = req.body;
       const user = await findUserById(userId);
+
       if (!user) {
         res.status(401).json({ error: "Mã Số Sinh viên không tồn tại" });
         return;
@@ -38,10 +39,7 @@ module.exports = {
           email: user.phone,
         };
 
-        const accessToken = await jwt.sign(userJTW, hashSecretKey, {
-          expiresIn: "1d",
-        });
-
+        const accessToken = await jwt.sign(userJTW, hashSecretKey);
         res.status(200).send({ accessToken: accessToken });
       }
     } catch {}
