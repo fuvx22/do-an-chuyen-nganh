@@ -52,14 +52,13 @@ const getCourses = async () => {
 const editCourse = async (data) => {
   try {
     
-    const { _id, ...rest } = data;
+    const { _id, createAt ,...rest } = data;
     const validData = await COURSE_SCHEMA.validateAsync(rest, { abortEarly: false });
     const result = await GET_DB().collection(COURSE_COLLECTION_NAME).findOneAndUpdate(
       { _id: new ObjectId(_id) },
       { $set: validData },
       { returnDocument: "after" }
     )
-    console.log(result)
     return result
 
   } catch (error) {
