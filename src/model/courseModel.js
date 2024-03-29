@@ -72,6 +72,12 @@ const deleteCourse = async (courseToDetele) => {
     const result = await GET_DB().collection(COURSE_COLLECTION_NAME).deleteOne(
       { _id: new ObjectId(courseToDetele._id) }
     )
+
+    await GET_DB().collection(COURSE_COLLECTION_NAME).updateMany(
+      { preRequireCourse: courseToDetele.courseId },
+      { $set: { preRequireCourse: "no" } }
+    )
+
     return result
 
   } catch (error) {
