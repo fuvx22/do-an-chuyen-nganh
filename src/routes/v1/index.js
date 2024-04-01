@@ -2,6 +2,8 @@ const { StatusCodes } = require("http-status-codes");
 var express = require("express");
 const { userRouter } = require("./userRoute");
 const { courseRouter } = require("./courseRoute");
+const { instructorRouter } = require("./instructorRoute");
+const { majorRouter } = require("./majorRoute");
 
 const router = express.Router();
 
