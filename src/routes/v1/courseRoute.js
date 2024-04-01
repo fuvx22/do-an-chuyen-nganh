@@ -10,10 +10,10 @@ courseRouter
   .get(verifyToken, courseController.getCourses);
 
 courseRouter.route("/edit")
-  .put( (req,res) => courseController.editCourse(req,res))
+  .put(courseController.editCourse)
 
 courseRouter.route("/delete")
-  .delete( (req,res) => courseController.deleteCourse(req,res))
+  .delete(courseController.deleteCourse)
 
 module.exports = {
   courseRouter,
