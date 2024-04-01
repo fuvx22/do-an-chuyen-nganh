@@ -2,7 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 var express = require("express");
 const { userRouter } = require("./userRoute");
 const { courseRouter } = require("./courseRoute");
-const { instructorRouter } = require("./instructorRoute");
+
 const router = express.Router();
 
 router.get("/", (req, res) => {
@@ -16,4 +16,6 @@ router.get("/status", (req, res) => {
 router.use("/user", userRouter);
 router.use("/course", courseRouter);
 router.use("/instructor", instructorRouter);
+router.use("/major", majorRouter);
+
 module.exports = router;
