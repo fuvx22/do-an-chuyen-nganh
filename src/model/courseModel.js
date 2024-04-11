@@ -52,8 +52,9 @@ const getCourses = async () => {
 const editCourse = async (data) => {
   try {
     
-    const { _id, createAt ,...rest } = data;
+    const { _id ,...rest } = data;
     const validData = await COURSE_SCHEMA.validateAsync(rest, { abortEarly: false });
+    delete validData.createAt;
     const result = await GET_DB().collection(COURSE_COLLECTION_NAME).findOneAndUpdate(
       { _id: new ObjectId(_id) },
       { $set: validData },
