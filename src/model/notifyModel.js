@@ -5,8 +5,8 @@ const { OBJECT_ID_RULES, OBJECT_ID_MESSAGE } = require("../utils/validators");
 const NOTIFY_COLLECTION_NAME = "notify";
 
 const NOTIFY_SCHEMA = Joi.object({
-  title: Joi.string().required().min(5).max(100).trim().strict(),
-  content: Joi.string().required().min(5).trim().strict(),
+  title: Joi.string().required().min(3).max(100).trim().strict(),
+  content: Joi.string().required().min(3),
   authorId: Joi.string().required().pattern(OBJECT_ID_RULES).message(OBJECT_ID_MESSAGE),
   createAt: Joi.date().timestamp('javascript').default(Date.now)
 })
@@ -40,7 +40,22 @@ const createNew = async (data) => {
 const getNotifies = async () => {
   try {
 
-    return await GET_DB().collection(NOTIFY_COLLECTION_NAME).find().toArray();
+    return await GET_DB().collection(NOTIFY_COLLECTION_NAME).aggregate([
+      {
+        $set: {
+          authorId: { $toObjectId: '$authorId' } // Chuyển đổi kiểu dữ liệu của trường authorId từ string sang ObjectId
+        }
+      },
+      {
+        $lookup:
+          {
+            from: 'user',
+            localField: 'authorId',
+            foreignField: '_id' ,
+            as: 'author'
+          }
+      }
+    ]).toArray();
     
   } catch (error) {
     throw new Error(error);
