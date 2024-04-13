@@ -14,6 +14,9 @@ notifyRouter.route("/edit")
 notifyRouter.route("/delete")
   .delete(notifyController.deleteNotify)
 
+notifyRouter.route("/find")
+  .get(notifyController.findOneById)
+
 module.exports = {
   notifyRouter,
 };

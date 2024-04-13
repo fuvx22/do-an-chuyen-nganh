@@ -7,7 +7,7 @@ const createNew = async (req, res) => {
     const createdNotify = await notifyModel.createNew(newNotify);
     res.status(StatusCodes.CREATED).json(createdNotify);
   } catch (error) {
-    res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
+    res.status(StatusCodes.PRECONDITION_FAILED).json({ error: error.message });
   }
 };
 
@@ -46,11 +46,24 @@ const deleteNotify = async (req, res) => {
   }
 };
 
+const findOneById = async (req, res) => {
+  try {
+    const toFind = req.query;
+    const result = await notifyModel.findOneById(toFind.id);
+    res.status(StatusCodes.OK).json(result);
+  } catch (error) {
+    res
+      .status(StatusCodes.NOT_FOUND)
+      .json({ error: error.message });
+  }
+}
+
 const notifyController = {
   createNew,
   getNotifies,
   editNotify,
   deleteNotify,
+  findOneById
 };
 
 module.exports = notifyController;

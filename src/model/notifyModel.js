@@ -97,7 +97,8 @@ const notifyModel = {
   createNew,
   getNotifies,
   editNotify,
-  deleteNotify
+  deleteNotify,
+  findOneById
 }
 
 module.exports = notifyModel
