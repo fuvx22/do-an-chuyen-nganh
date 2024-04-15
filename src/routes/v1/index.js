@@ -6,6 +6,7 @@ const { instructorRouter } = require("./instructorRoute");
 const { majorRouter } = require("./majorRoute");
 const { courseScheduleRouter } = require("./courseScheduleRoute");
 const { semesterRouter } = require("./semesterRoute");
+const { notifyRouter } = require("./notifyRoute")
 
 const router = express.Router();
 
@@ -23,5 +24,7 @@ router.use("/instructor", instructorRouter);
 router.use("/major", majorRouter);
 router.use("/courseSchedule", courseScheduleRouter);
 router.use("/semester", semesterRouter);
+router.use("/notify", notifyRouter);
+
 
 module.exports = router;

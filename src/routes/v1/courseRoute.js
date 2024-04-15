@@ -1,5 +1,4 @@
 var express = require("express");
-const { StatusCodes } = require("http-status-codes");
 const courseController = require("../../controller/courseController");
 const { verifyToken } = require("../../middlewares/verifyAccesToken");
 const courseRouter = express.Router();
