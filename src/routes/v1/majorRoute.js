@@ -2,7 +2,6 @@ var express = require("express")
 const  { StatusCodes } = require("http-status-codes")
 const majorController = require("../../controller/majorController")
 const { verifyToken } = require("../../middlewares/verifyAccesToken")
-const verifyAccesToken = require("../../middlewares/verifyAccesToken")
 const majorRouter = express.Router()
 
 

@@ -11,7 +11,7 @@ const MAJOR_SCHEMA = Joi.object({
         .pattern(/^[0-9]{6}$/)
         .trim()
         .strict(),
-    name: Joi.string().required().min(3).max(50).trim().strict(),
+    name: Joi.string().required().min(3).max(60).trim().strict(),
     type: Joi.string().required().min(5).max(30).trim().strict(),
     createAt: Joi.date().timestamp("javascript").default(Date.now),
 })
@@ -66,6 +66,8 @@ const editMajor = async (data) => {
                 { $set: validData },
                 { returnDocument: "after" }
             );
+        
+            return result;
     } catch (error) {
         throw new Error(error);
     }
