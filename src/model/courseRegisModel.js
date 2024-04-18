@@ -35,6 +35,16 @@ const createNewCourseRegis = async (data) => {
     const validData = await COURSE_REGIS_SCHEMA.validateAsync(data, {
       abortEarly: false,
     });
+
+    // check if courseScheduleId maxQuantity > 0
+    const courseSchedule = await GET_DB()
+      .collection("courseSchedule")
+      .findOne({ _id: new ObjectId(validData.courseScheduleId) });
+
+    if (courseSchedule.maxQuantity <= 0) {
+      throw new Error("Course is full");
+    }
+
     const createdCourseRegis = await GET_DB()
       .collection(COURSE_REGIS_COLLECTION_NAME)
       .insertOne(validData);
@@ -155,7 +165,7 @@ const deleteCourseRegis = async (courseRegisToDelete) => {
       .collection(COURSE_REGIS_COLLECTION_NAME)
       .deleteOne({ _id: new ObjectId(courseRegisToDelete._id) });
 
-      await GET_DB()
+    await GET_DB()
       .collection("courseSchedule")
       .updateOne(
         { _id: new ObjectId(courseRegisToDelete.courseScheduleId) },
