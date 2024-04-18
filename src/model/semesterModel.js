@@ -90,6 +90,7 @@ const deleteSemester = async (semesterToDelete) => {
 
 
 const semesterModel = {
+    findOneById,
     createSemester,
     getSemester,
     editSemester,
