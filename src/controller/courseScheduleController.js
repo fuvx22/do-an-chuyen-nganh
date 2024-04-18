@@ -4,7 +4,8 @@ const { StatusCodes } = require("http-status-codes");
 const createNewCourseSchedule = async (req, res) => {
   try {
     const newCourseSchedule = req.body;
-    const createdCourseSchedule = await courseScheduleModel.createNewCourseSchedule(newCourseSchedule);
+    const createdCourseSchedule =
+      await courseScheduleModel.createNewCourseSchedule(newCourseSchedule);
     res.status(StatusCodes.CREATED).json(createdCourseSchedule);
   } catch (error) {
     res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
@@ -22,10 +23,25 @@ const getCourseSchedules = async (req, res) => {
   }
 };
 
+const getCourseSchedulesBySemester = async (req, res) => {
+  try {
+    const semesterId = req.params.semesterId;
+    const courseSchedules =
+      await courseScheduleModel.getCourseSchedulesBySemester(semesterId);
+    res.status(StatusCodes.OK).json(courseSchedules);
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
+};
+
 const editCourseSchedule = async (req, res) => {
   try {
     const courseScheduleToEdit = req.body;
-    const editedCourseSchedule = await courseScheduleModel.editCourseSchedule(courseScheduleToEdit);
+    const editedCourseSchedule = await courseScheduleModel.editCourseSchedule(
+      courseScheduleToEdit
+    );
     res.status(StatusCodes.OK).json(editedCourseSchedule);
   } catch (error) {
     res
@@ -38,7 +54,9 @@ const deleteCourseSchedule = async (req, res) => {
   try {
     const courseScheduleToDetele = req.body;
     console.log(req.body);
-    const result = await courseScheduleModel.deleteCourseSchedule(courseScheduleToDetele);
+    const result = await courseScheduleModel.deleteCourseSchedule(
+      courseScheduleToDetele
+    );
     res.status(StatusCodes.OK).json(result);
   } catch (error) {
     res
@@ -48,10 +66,11 @@ const deleteCourseSchedule = async (req, res) => {
 };
 
 const courseScheduleController = {
-    createNewCourseSchedule,
-    getCourseSchedules,
-    editCourseSchedule,
-    deleteCourseSchedule
+  createNewCourseSchedule,
+  getCourseSchedules,
+  editCourseSchedule,
+  deleteCourseSchedule,
+  getCourseSchedulesBySemester,
 };
 
 module.exports = courseScheduleController;
