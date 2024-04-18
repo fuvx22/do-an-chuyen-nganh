@@ -2,9 +2,10 @@ const Joi = require("joi");
 const { ObjectId } = require("mongodb");
 const { GET_DB } = require("../config/mongodb");
 const { OBJECT_ID_RULES, OBJECT_ID_MESSAGE } = require("../utils/validators");
-const COURSE_SCHEDULE_COLLECTION_NAME = "courseSchedule"
+const COURSE_SCHEDULE_COLLECTION_NAME = "courseSchedule";
 
 const COURSE_SCHEDULE_SCHEMA = Joi.object({
+
     courseId: Joi.string().required().pattern(OBJECT_ID_RULES).message(OBJECT_ID_MESSAGE),
     instructorId: Joi.string().required().pattern(OBJECT_ID_RULES).message(OBJECT_ID_MESSAGE),
     semesterId: Joi.string().required().pattern(OBJECT_ID_RULES).message(OBJECT_ID_MESSAGE),
@@ -19,77 +20,117 @@ const COURSE_SCHEDULE_SCHEMA = Joi.object({
     createAt: Joi.date().timestamp('javascript').default(Date.now)
 })
 
+
 const findOneById = async (id) => {
-    try {
-        const courseSchedule = await GET_DB()
-            .collection(COURSE_SCHEDULE_COLLECTION_NAME)
-            .findOne({_id: new ObjectId(id)});
-        return courseSchedule;
-    } catch (error) {
-        throw new Error(error)
-    }
-}
+  try {
+    const courseSchedule = await GET_DB()
+      .collection(COURSE_SCHEDULE_COLLECTION_NAME)
+      .findOne({ _id: new ObjectId(id) });
+    return courseSchedule;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
 
 const createNewCourseSchedule = async (data) => {
-    try {
-        const validData = await COURSE_SCHEDULE_SCHEMA.validateAsync(data, {
-            abortEarly: false,
-        });
-        const createdCourseSchedule = await GET_DB()
-            .collection(COURSE_SCHEDULE_COLLECTION_NAME)
-            .insertOne(validData);
+  try {
+    const validData = await COURSE_SCHEDULE_SCHEMA.validateAsync(data, {
+      abortEarly: false,
+    });
+    const createdCourseSchedule = await GET_DB()
+      .collection(COURSE_SCHEDULE_COLLECTION_NAME)
+      .insertOne(validData);
 
-        const getNewCourseSchedule = await findOneById(createdCourseSchedule.insertedId)
-        return getNewCourseSchedule;
-    } catch (error) {
-        throw new Error(error);
-    }
-}
-
+    const getNewCourseSchedule = await findOneById(
+      createdCourseSchedule.insertedId
+    );
+    return getNewCourseSchedule;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
 
 const getCourseSchedule = async () => {
-    try {
-        return await GET_DB().collection(COURSE_SCHEDULE_COLLECTION_NAME).find().toArray();
-    } catch (error) {
-        throw new Error(error);
-    }
-}
+  try {
+    return await GET_DB()
+      .collection(COURSE_SCHEDULE_COLLECTION_NAME)
+      .find()
+      .toArray();
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+
+const getCourseSchedulesBySemester = async (semesterId) => {
+  try {
+    return await GET_DB()
+      .collection(COURSE_SCHEDULE_COLLECTION_NAME)
+      .aggregate([
+        { $set: { courseId: { $toObjectId: "$courseId" } } },
+        { $set: { instructorId: { $toObjectId: "$instructorId" } } },
+        { $match: { semesterId: semesterId } },
+        {
+          $lookup: {
+            from: "course",
+            localField: "courseId",
+            foreignField: "_id",
+            as: "course",
+          },
+        },
+        { $unwind: "$course" },
+        {
+          $lookup: {
+            from: "instructor",
+            localField: "instructorId",
+            foreignField: "_id",
+            as: "instructor",
+          },
+        },
+        { $unwind: "$instructor" },
+      ])
+      .toArray();
+  } catch (error) {
+    throw new Error(error);
+  }
+};
 
 const editCourseSchedule = async (data) => {
-    try {
-        const { _id, ...rest} = data;
-        const validData = await COURSE_SCHEDULE_SCHEMA.validateAsync(rest, { abortEarly: false });
-        delete validData.createAt;
-        const result = await GET_DB().collection(COURSE_SCHEDULE_COLLECTION_NAME).findOneAndUpdate(
-            { _id: new ObjectId(_id)},
-            { $set: validData },
-            { returnDocument: "after"}
-        )
-        return result
-    } catch (error) {
-        throw new Error(error);
-    }
-}
-
+  try {
+    const { _id, creatAt, ...rest } = data;
+    const validData = await COURSE_SCHEDULE_SCHEMA.validateAsync(rest, {
+      abortEarly: false,
+    });
+    const result = await GET_DB()
+      .collection(COURSE_SCHEDULE_COLLECTION_NAME)
+      .findOneAndUpdate(
+        { _id: new ObjectId(_id) },
+        { $set: validData },
+        { returnDocument: "after" }
+      );
+    return result;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
 
 const deleteCourseSchedule = async (courseScheduleToDelete) => {
-    try{
-        const result = await GET_DB().collection(COURSE_SCHEDULE_COLLECTION_NAME).deleteOne(
-            { _id: new ObjectId(courseScheduleToDelete._id)},
-        )
-        return result
-    } catch (error) {
-        throw new Error(error)
-    }
-}
-
-
+  try {
+    const result = await GET_DB()
+      .collection(COURSE_SCHEDULE_COLLECTION_NAME)
+      .deleteOne({ _id: new ObjectId(courseScheduleToDelete._id) });
+    return result;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
 
 const courseScheduleModel = {
-    createNewCourseSchedule,
-    getCourseSchedule,
-    editCourseSchedule,
-    deleteCourseSchedule
-}
+  createNewCourseSchedule,
+  getCourseSchedule,
+  editCourseSchedule,
+  deleteCourseSchedule,
+  getCourseSchedulesBySemester,
+};
 
-module.exports = courseScheduleModel
+module.exports = courseScheduleModel;
