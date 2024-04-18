@@ -4,12 +4,13 @@ const { GET_DB } = require("../config/mongodb");
 const SEMESTER_COLLLECTION_NAME = "semester"
 
 
-
+const currentYear = new Date().getFullYear();
+const yearRangeRegex = new RegExp(`^Học kỳ [123] Năm học \\d{4}-\\d{4}$`);
 
 const SEMESTER_SCHEMA = Joi.object({
-    semesterName: Joi.string().required(),
-    startSemesterDate: Joi.date().required(),
-    endSemesterDate: Joi.date().required(),
+    semesterName: Joi.string().regex(yearRangeRegex).required(),
+    startSemesterDate: Joi.date().timestamp('javascript').default(Date.now).required(),
+    endSemesterDate: Joi.date().timestamp('javascript').default(Date.now).required(),
 })
 
   

@@ -5,11 +5,12 @@ const { OBJECT_ID_RULES, OBJECT_ID_MESSAGE } = require("../utils/validators");
 const COURSE_SCHEDULE_COLLECTION_NAME = "courseSchedule"
 
 const COURSE_SCHEDULE_SCHEMA = Joi.object({
-    courseId: Joi.string().required().min(6).max(6).pattern(/^[0-9]{6}$/).trim().strict(),
-    instructorId: Joi.string().required().min(5).max(10).trim().strict(),
-    semesterId: Joi.string().required().min(5).max(5).trim().strict(),
-    dayOfWeek: Joi.string().required().valid('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'),
-    periods: Joi.array().items(Joi.number().integer().min(1).max(10)).min(1).max(10).unique().required(), // Lưu số tiết học trong một ngày dưới dạng mảng
+    courseId: Joi.string().required().pattern(OBJECT_ID_RULES).message(OBJECT_ID_MESSAGE),
+    instructorId: Joi.string().required().pattern(OBJECT_ID_RULES).message(OBJECT_ID_MESSAGE),
+    semesterId: Joi.string().required().pattern(OBJECT_ID_RULES).message(OBJECT_ID_MESSAGE),
+    // dayOfWeek: Joi.string().required().valid('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'),
+    dayOfWeek: Joi.string().required().valid('Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'),
+    period: Joi.array().items(Joi.number().integer().min(1).max(10)).min(1).max(10).unique().required(), // Lưu số tiết học trong một ngày dưới dạng mảng
     group: Joi.string().min(2).max(2).required(),
     roomNumber: Joi.string().required().min(3).max(15),
     maxQuantity: Joi.number().required().min(1).max(100).integer(),
@@ -54,13 +55,14 @@ const getCourseSchedule = async () => {
 
 const editCourseSchedule = async (data) => {
     try {
-        const { _id, creatAt, ...rest} = data;
+        const { _id, ...rest} = data;
         const validData = await COURSE_SCHEDULE_SCHEMA.validateAsync(rest, { abortEarly: false });
+        delete validData.createAt;
         const result = await GET_DB().collection(COURSE_SCHEDULE_COLLECTION_NAME).findOneAndUpdate(
             { _id: new ObjectId(_id)},
             { $set: validData },
             { returnDocument: "after"}
-        );
+        )
         return result
     } catch (error) {
         throw new Error(error);
