@@ -88,11 +88,13 @@ const deleteSemester = async (semesterToDelete) => {
 };
 
 const semesterModel = {
-  createSemester,
-  getSemester,
-  editSemester,
-  deleteSemester,
-  findOneById,
+
+    findOneById,
+    createSemester,
+    getSemester,
+    editSemester,
+    deleteSemester,
+
 };
 
 module.exports = semesterModel;

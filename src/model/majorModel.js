@@ -55,10 +55,11 @@ const getMajors = async () => {
 
 const editMajor = async (data) => {
     try {
-        const { _id, ...rest } = data;
+        const { _id, createAt, ...rest } = data;
         const validData = await MAJOR_SCHEMA.validateAsync(rest, {
             abortEarly: false,
         });
+        //delete validData.createAt;
         const result = await GET_DB()
             .collection(MAJOR_COLLECTION_NAME)
             .findOneAndUpdate(
@@ -87,6 +88,7 @@ const deleteMajor = async (majorToDelete) => {
 };
 
 const majorModel = {
+    findOneById,
     createNew,
     getMajors,
     editMajor,

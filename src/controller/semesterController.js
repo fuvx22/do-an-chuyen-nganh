@@ -1,6 +1,8 @@
 const semesterModel = require("../model/semesterModel");
 const { StatusCodes } = require("http-status-codes");
 
+
+
 const createSemester = async (req, res) => {
   try {
     const newSemester = req.body;
