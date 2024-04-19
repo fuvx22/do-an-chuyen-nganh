@@ -16,6 +16,10 @@ courseRegisRouter
 courseRegisRouter
   .route("/time/:userId/:semesterId")
   .get(courseRegisController.getTimeSchedule);
+courseRegisRouter
+  .route("/metadata/config")
+  .get(courseRegisController.getMetatdata)
+  .put(courseRegisController.updateMetadata);
 
 module.exports = {
   courseRegisRouter,

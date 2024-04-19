@@ -1,5 +1,27 @@
 const courseRegisModel = require("../model/courseRegisModel");
 const { StatusCodes } = require("http-status-codes");
+const metadata = require("../utils/metadata.json");
+const fs = require('fs');
+
+
+const getMetatdata = async (req, res) => {
+  try {
+    res.status(StatusCodes.OK).json(metadata);
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
+
+const updateMetadata = async (req, res) => {  
+  try {
+    const newMetadata = req.body;
+    if (!newMetadata.currentSemesterId || newMetadata.isEnableCourseRegistration === undefined) throw new Error('Invalid metadata');
+    fs.writeFileSync('src/utils/metadata.json', JSON.stringify(newMetadata));
+    res.status(StatusCodes.OK).json(newMetadata);
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
 
 const createNewCourseRegis = async (req, res) => {
   try {
@@ -55,6 +77,8 @@ const courseRegisController = {
   getCourseRegisByUserId,
   deleteCourseRegis,
   getTimeSchedule,
+  getMetatdata,
+  updateMetadata,
 };
 
 module.exports = courseRegisController;
