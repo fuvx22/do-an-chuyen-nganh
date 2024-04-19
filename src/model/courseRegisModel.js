@@ -178,10 +178,120 @@ const deleteCourseRegis = async (courseRegisToDelete) => {
   }
 };
 
+const getTimeSchedule = async (userId, semsterId) => {
+  try {
+    let result = await GET_DB()
+      .collection(COURSE_REGIS_COLLECTION_NAME)
+      .aggregate([
+        { $match: { userId: userId } },
+        { $set: { courseScheduleId: { $toObjectId: "$courseScheduleId" } } },
+        {
+          $lookup: {
+            from: "courseSchedule",
+            localField: "courseScheduleId",
+            foreignField: "_id",
+            as: "courseSchedule",
+          },
+        },
+        {
+          $unwind: {
+            path: "$courseSchedule",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $set: {
+            "courseSchedule.courseId": {
+              $toObjectId: "$courseSchedule.courseId",
+            },
+          },
+        },
+        {
+          $lookup: {
+            from: "course",
+            localField: "courseSchedule.courseId",
+            foreignField: "_id",
+            as: "course",
+          },
+        },
+        {
+          $unwind: {
+            path: "$course",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            "courseSchedule.period": 1,
+            "course.name": 1,
+            "courseSchedule.dayOfWeek": 1,
+            "courseSchedule.roomNumber": 1,
+          },
+        },
+        {
+          $group: {
+            _id: "$courseSchedule.dayOfWeek",
+            schedule: { $push: "$$ROOT" },
+          },
+        },
+        {
+          $sort: { _id: 1 },
+        },
+      ])
+      .toArray();
+
+    let schedule = {
+      "Thứ 2": [],
+      "Thứ 3": [],
+      "Thứ 4": [],
+      "Thứ 5": [],
+      "Thứ 6": [],
+      "Thứ 7": [],
+    };
+    let hours = {
+      1: new Date("2024-04-15T07:00:00"),
+      2: new Date("2024-04-15T07:50:00"),
+      3: new Date("2024-04-15T09:00:00"),
+      4: new Date("2024-04-15T09:50:00"),
+      5: new Date("2024-04-15T10:40:00"),
+      6: new Date("2024-04-15T13:00:00"),
+      7: new Date("2024-04-15T13:50:00"),
+      8: new Date("2024-04-15T15:00:00"),
+      9: new Date("2024-04-15T15:50:00"),
+      10: new Date("2024-04-15T16:40:00"),
+    };
+
+    result.forEach((item) => {
+      item.schedule = item.schedule.map((scheduleItem, i) => {
+        lastIdx = scheduleItem.courseSchedule.period.length - 1;
+        return {
+          id: i + 1,
+          type: "custom",
+          name:
+            scheduleItem.course.name +
+            ", P." +
+            scheduleItem.courseSchedule.roomNumber,
+          startTime: hours[scheduleItem.courseSchedule.period[0]].getTime(),
+          endTime:
+            hours[scheduleItem.courseSchedule.period[lastIdx]].getTime() +
+            50 * 60 * 1000,
+        };
+      });
+      [schedule[item._id]] = [item.schedule];
+    });
+
+    return schedule;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 const courseRegisModel = {
   createNewCourseRegis,
   getCourseRegisByUserId,
   deleteCourseRegis,
+  getTimeSchedule,
 };
 
 module.exports = courseRegisModel;
