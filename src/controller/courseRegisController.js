@@ -1,10 +1,12 @@
-const courseRegisModel = require('../model/courseRegisModel');
+const courseRegisModel = require("../model/courseRegisModel");
 const { StatusCodes } = require("http-status-codes");
 
 const createNewCourseRegis = async (req, res) => {
   try {
     const newCourseRegis = req.body;
-    const createdCourseRegis = await courseRegisModel.createNewCourseRegis(newCourseRegis);
+    const createdCourseRegis = await courseRegisModel.createNewCourseRegis(
+      newCourseRegis
+    );
     res.status(StatusCodes.CREATED).json(createdCourseRegis);
   } catch (error) {
     res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
@@ -24,10 +26,27 @@ const getCourseRegisByUserId = async (req, res) => {
 const deleteCourseRegis = async (req, res) => {
   try {
     const courseRegisToDelete = req.body;
-    const result = await courseRegisModel.deleteCourseRegis(courseRegisToDelete);
+    const result = await courseRegisModel.deleteCourseRegis(
+      courseRegisToDelete
+    );
     res.status(StatusCodes.OK).json(result);
   } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
+};
+
+const getTimeSchedule = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const semesterId = req.params.semesterId;
+    const result = await courseRegisModel.getTimeSchedule(userId, semesterId);
+    res.status(StatusCodes.OK).json(result);
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
   }
 };
 
@@ -35,6 +54,7 @@ const courseRegisController = {
   createNewCourseRegis,
   getCourseRegisByUserId,
   deleteCourseRegis,
+  getTimeSchedule,
 };
 
 module.exports = courseRegisController;
