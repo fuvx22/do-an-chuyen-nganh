@@ -51,23 +51,24 @@ const getMajors = async () => {
 };
 
 const editMajor = async (data) => {
-  try {
-    const { _id, ...rest } = data;
-    const validData = await MAJOR_SCHEMA.validateAsync(rest, {
-      abortEarly: false,
-    });
-    const result = await GET_DB()
-      .collection(MAJOR_COLLECTION_NAME)
-      .findOneAndUpdate(
-        { _id: new ObjectId(_id) },
-        { $set: validData },
-        { returnDocument: "after" }
-      );
-
-    return result;
-  } catch (error) {
-    throw new Error(error);
-  }
+    try {
+        const { _id, createAt, ...rest } = data;
+        const validData = await MAJOR_SCHEMA.validateAsync(rest, {
+            abortEarly: false,
+        });
+        //delete validData.createAt;
+        const result = await GET_DB()
+            .collection(MAJOR_COLLECTION_NAME)
+            .findOneAndUpdate(
+                { _id: new ObjectId(_id) },
+                { $set: validData },
+                { returnDocument: "after" }
+            );
+        
+            return result;
+    } catch (error) {
+        throw new Error(error);
+    }
 };
 
 const deleteMajor = async (majorToDelete) => {
@@ -89,6 +90,7 @@ const majorModel = {
   getMajors,
   editMajor,
   deleteMajor,
+  findOneById,
 };
 
 module.exports = majorModel;
