@@ -194,6 +194,11 @@ const getTimeSchedule = async (userId, semsterId) => {
           },
         },
         {
+          $match: {
+            "courseSchedule.semesterId": semsterId,
+          },
+        },
+        {
           $unwind: {
             path: "$courseSchedule",
             preserveNullAndEmptyArrays: true,
@@ -223,6 +228,7 @@ const getTimeSchedule = async (userId, semsterId) => {
         {
           $project: {
             _id: 0,
+            "course.semesterId": 1,
             "courseSchedule.period": 1,
             "course.name": 1,
             "courseSchedule.dayOfWeek": 1,
