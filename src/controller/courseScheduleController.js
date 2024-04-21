@@ -4,6 +4,17 @@ const { StatusCodes } = require("http-status-codes");
 const createNewCourseSchedule = async (req, res) => {
   try {
     const newCourseSchedule = req.body;
+    const checkConflict = await courseScheduleModel.checkClassConfict(
+      newCourseSchedule
+    );
+    if (checkConflict.conflict) {
+      console.log(checkConflict.conflictSchedule);
+      return res.status(StatusCodes.BAD_GATEWAY).json({
+        error:
+          "Trùng tiết học với phòng học khác!: " +
+          checkConflict.conflictSchedule.courseId,
+      });
+    }
     const createdCourseSchedule =
       await courseScheduleModel.createNewCourseSchedule(newCourseSchedule);
     res.status(StatusCodes.CREATED).json(createdCourseSchedule);
@@ -39,6 +50,42 @@ const getCourseSchedulesBySemester = async (req, res) => {
 const editCourseSchedule = async (req, res) => {
   try {
     const courseScheduleToEdit = req.body;
+    const existingCourseSchedule = await courseScheduleModel.findOneById(
+      courseScheduleToEdit._id
+    );
+    let noChangeInschedule = false;
+
+    if (
+      String(existingCourseSchedule.startPeriod) ===
+        String(courseScheduleToEdit.startPeriod) &&
+      String(existingCourseSchedule.endPeriod) ===
+        String(courseScheduleToEdit.endPeriod) &&
+      String(existingCourseSchedule.dayOfWeek) ===
+        String(courseScheduleToEdit.dayOfWeek) &&
+      String(existingCourseSchedule.roomNumber) ===
+        String(courseScheduleToEdit.roomNumber)
+    ) {
+      noChangeInschedule = true;
+    } else {
+      noChangeInschedule = false;
+    }
+    if (!noChangeInschedule) {
+      const checkConflict = await courseScheduleModel.checkClassConfict(
+        courseScheduleToEdit
+      );
+      if (checkConflict.conflict) {
+        return res.status(StatusCodes.BAD_GATEWAY).json({
+          error:
+            "Trùng tiết học với phòng học khác!: " +
+            checkConflict.conflictSchedule.courseId,
+        });
+      }
+    }
+
+    // console.log(noChangeInschedule);
+    if (courseScheduleToEdit.createAt) {
+      courseScheduleToEdit.createAt = new Date().getTime();
+    }
     const editedCourseSchedule = await courseScheduleModel.editCourseSchedule(
       courseScheduleToEdit
     );
@@ -53,7 +100,7 @@ const editCourseSchedule = async (req, res) => {
 const deleteCourseSchedule = async (req, res) => {
   try {
     const courseScheduleToDetele = req.body;
-    console.log(req.body);
+    // console.log(req.body);
     const result = await courseScheduleModel.deleteCourseSchedule(
       courseScheduleToDetele
     );
