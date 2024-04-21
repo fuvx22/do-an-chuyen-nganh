@@ -8,14 +8,8 @@ const yearRangeRegex = new RegExp(`^Học kỳ [123] Năm học \\d{4}-\\d{4}$`)
 
 const SEMESTER_SCHEMA = Joi.object({
   semesterName: Joi.string().regex(yearRangeRegex).required(),
-  startSemesterDate: Joi.date()
-    .timestamp("javascript")
-    .default(Date.now)
-    .required(),
-  endSemesterDate: Joi.date()
-    .timestamp("javascript")
-    .default(Date.now)
-    .required(),
+  startSemesterDate: Joi.date().default(Date.now).required(),
+  endSemesterDate: Joi.date().default(Date.now).required(),
 });
 
 const findOneById = async (id) => {
@@ -88,13 +82,11 @@ const deleteSemester = async (semesterToDelete) => {
 };
 
 const semesterModel = {
-
-    findOneById,
-    createSemester,
-    getSemester,
-    editSemester,
-    deleteSemester,
-
+  findOneById,
+  createSemester,
+  getSemester,
+  editSemester,
+  deleteSemester,
 };
 
 module.exports = semesterModel;
